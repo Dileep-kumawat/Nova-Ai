@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import '../styles/Login.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useSelector } from 'react-redux';
 
 const Login = () => {
-    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
+
+    const { handleLogin } = useAuth();
+    const { loading, error } = useSelector(state => state.auth);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormData({
@@ -16,15 +21,14 @@ const Login = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
 
-        // Simulating an API call/delay
-        setTimeout(() => {
-            console.log('Login attempt captured:', formData);
-            setIsLoading(false);
-        }, 1500);
+        const result = await handleLogin(formData);
+
+        if (result?.success) {
+            navigate('/dashboard');
+        }
     };
 
     return (
@@ -55,6 +59,16 @@ const Login = () => {
                         <h1 className="header-title">Welcome back</h1>
                         <p className="header-subtitle">Sign in to your AI search assistant</p>
                     </div>
+
+                    {/* Error Message Display */}
+                    {error && (
+                        <div className="error-message">
+                            <svg className="error-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            <span>{error}</span>
+                        </div>
+                    )}
 
                     {/* Login Form */}
                     <form className="login-form" onSubmit={handleSubmit}>
@@ -89,9 +103,9 @@ const Login = () => {
                         <button
                             className="submit-btn"
                             type="submit"
-                            disabled={isLoading}
+                            disabled={loading}
                         >
-                            {isLoading ? 'Signing in...' : 'Sign In'}
+                            {loading ? 'Signing in...' : 'Sign In'}
                         </button>
                     </form>
 

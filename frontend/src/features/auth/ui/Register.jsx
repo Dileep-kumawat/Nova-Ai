@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
 import '../styles/Register.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useSelector } from 'react-redux';
 
 const Register = () => {
+    const navigate = useNavigate();
+
+    const { handleRegister } = useAuth();
+    const { loading, error } = useSelector(state => state.auth);
+
     const [formData, setFormData] = useState({
-        fullName: '',
+        username: '',
         email: '',
         password: '',
         terms: false
@@ -54,10 +61,14 @@ const Register = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Registration submitted:', formData);
-        // Add your API integration here
+
+        const result = await handleRegister(formData);
+
+        if (result?.success) {
+            navigate('/dashboard');
+        }
     };
 
     return (
@@ -94,6 +105,16 @@ const Register = () => {
                         <p className="form-subtitle">Start your journey with our AI-powered assistant.</p>
                     </div>
 
+                    {/* Error Message Display (Matches Login style) */}
+                    {error && (
+                        <div className="error-message">
+                            <svg className="error-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            <span>{error}</span>
+                        </div>
+                    )}
+
                     <form className="register-form" onSubmit={handleSubmit}>
 
                         {/* Name Field */}
@@ -102,11 +123,11 @@ const Register = () => {
                             <input
                                 className="form-input"
                                 id="fullName"
-                                name="fullName"
+                                name="username"
                                 placeholder="John Doe"
                                 required
                                 type="text"
-                                value={formData.fullName}
+                                value={formData.username}
                                 onChange={handleChange}
                             />
                         </div>
@@ -163,8 +184,12 @@ const Register = () => {
                         </div>
 
                         {/* Submit Button */}
-                        <button className="submit-btn" type="submit">
-                            Create Free Account
+                        <button
+                            className="submit-btn"
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading ? 'Creating Account...' : 'Create Free Account'}
                         </button>
                     </form>
 
