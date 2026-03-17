@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import '../styles/Login.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useSelector } from 'react-redux';
 
@@ -11,7 +11,7 @@ const Login = () => {
     });
 
     const { handleLogin } = useAuth();
-    const { loading, error } = useSelector(state => state.auth);
+    const { loading, error, user } = useSelector(state => state.auth);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -30,6 +30,10 @@ const Login = () => {
             navigate('/dashboard');
         }
     };
+
+    if (!loading && user) {
+        return <Navigate to="/dashboard" replace />
+    }
 
     return (
         <div className="login-page">

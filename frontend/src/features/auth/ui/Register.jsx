@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import '../styles/Register.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useSelector } from 'react-redux';
 
@@ -8,7 +8,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     const { handleRegister } = useAuth();
-    const { loading, error } = useSelector(state => state.auth);
+    const { loading, error, user } = useSelector(state => state.auth);
 
     const [formData, setFormData] = useState({
         username: '',
@@ -70,6 +70,10 @@ const Register = () => {
             navigate('/dashboard');
         }
     };
+
+    if (!loading && user) {
+        return <Navigate to="/" replace />
+    }
 
     return (
         <div className="register-page">
