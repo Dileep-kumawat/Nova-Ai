@@ -2,7 +2,6 @@ import { Router } from "express";
 import { register, verifyEmail, login, getMe } from "../controllers/auth.controller.js";
 import { registerValidator, loginValidator } from "../validators/auth.validator.js";
 import { authUser } from "../middleware/auth.middleware.js";
-import { testAi } from "../services/ai.service.js";
 
 const authRouter = Router();
 
@@ -39,17 +38,5 @@ authRouter.get('/get-me', authUser, getMe)
  * @query { token }
  */
 authRouter.get('/verify-email', verifyEmail)
-
-/**
- * @route GET /api/auth/testAi
- * @desc This is temporary api for testing the ai implementation
- * @access Public
- */
-authRouter.get('/test-ai', async (req, res) => {
-    const response = await testAi(req.body);
-    res.status(200).json({
-        response
-    });
-})
 
 export default authRouter;
