@@ -1,0 +1,285 @@
+/* Chat.css */
+/* @import './variables.css'; */
+
+/* ── Root shell ── */
+.chat {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--surface-dim);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  position: relative;
+}
+
+/* ── Atmospheric background glows ── */
+.chat__bg-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-bg);
+  overflow: hidden;
+}
+
+.chat__bg-glow-tr {
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 50%;
+  height: 50%;
+  background: rgba(143, 245, 255, 0.05);
+  filter: blur(120px);
+  border-radius: var(--radius-full);
+}
+
+.chat__bg-glow-bl {
+  position: absolute;
+  bottom: -10%;
+  left: -10%;
+  width: 40%;
+  height: 40%;
+  background: rgba(191, 129, 255, 0.05);
+  filter: blur(120px);
+  border-radius: var(--radius-full);
+}
+
+/* ── Main area ── */
+.chat__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Scrollable canvas ── */
+.chat__canvas {
+  flex: 1;
+  margin-top: var(--topbar-height);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at 50% 50%, rgba(143, 245, 255, 0.03) 0%, transparent 70%);
+}
+
+/* ── Message list ── */
+.chat__messages {
+  max-width: 896px;
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--sp-8) var(--sp-10) 160px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-12);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   AI Message
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.chat__msg-ai {
+  display: flex;
+  gap: var(--sp-6);
+  animation: msg-in 0.3s ease both;
+}
+
+.chat__msg-ai-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+/* AI avatar — filled bolt icon with glow */
+.chat__avatar-ai {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-primary-glow-sm);
+}
+
+.chat__avatar-ai .material-symbols-outlined {
+  color: var(--on-primary-container);
+  font-size: 20px;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+/* Glass panel bubble */
+.chat__bubble-ai {
+  padding: var(--sp-6);
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgba(73, 72, 71, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.chat__bubble-ai p {
+  color: var(--on-surface);
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+/* AI status badge */
+.chat__ai-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 4px var(--sp-3);
+  border-radius: var(--radius-full);
+  background: rgba(119, 1, 208, 0.1);
+  border: 1px solid rgba(191, 129, 255, 0.2);
+}
+
+.chat__ai-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--secondary);
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+.chat__ai-status-label {
+  font-family: var(--font-headline);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--secondary);
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.4; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   User Message
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.chat__msg-user {
+  display: flex;
+  gap: var(--sp-6);
+  justify-content: flex-end;
+  animation: msg-in 0.3s ease both;
+}
+
+.chat__msg-user-body {
+  max-width: 80%;
+}
+
+/* User bubble */
+.chat__bubble-user {
+  background-color: var(--surface-container-highest);
+  padding: var(--sp-6);
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgba(73, 72, 71, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.chat__bubble-user p {
+  color: var(--on-surface);
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+/* Timestamp */
+.chat__timestamp {
+  font-family: var(--font-headline);
+  font-size: 10px;
+  color: var(--on-surface-variant);
+  text-align: right;
+  margin-top: var(--sp-2);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* User avatar — image */
+.chat__avatar-user {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background-color: var(--surface-container-high);
+  border: 1px solid rgba(73, 72, 71, 0.3);
+  overflow: hidden;
+}
+
+.chat__avatar-user img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Typing indicator
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.chat__typing {
+  display: flex;
+  gap: var(--sp-6);
+  animation: msg-in 0.3s ease both;
+}
+
+/* Thinking avatar — pulsing auto_awesome icon */
+.chat__avatar-thinking {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: rgba(0, 238, 252, 0.2);
+  border: 1px solid rgba(143, 245, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat__avatar-thinking .material-symbols-outlined {
+  color: var(--primary);
+  font-size: 20px;
+  animation: thinking-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.5; transform: scale(0.88); }
+}
+
+/* Bouncing dots bubble */
+.chat__typing-bubble {
+  display: inline-block;
+  padding: var(--sp-6);
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgba(73, 72, 71, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.chat__typing-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.chat__typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: rgba(143, 245, 255, 0.5);
+  animation: dot-bounce 1s ease-in-out infinite;
+}
+
+.chat__typing-dot:nth-child(2) { animation-delay: -0.3s; }
+.chat__typing-dot:nth-child(3) { animation-delay: -0.5s; }
+
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0);    }
+  40%            { transform: translateY(-8px); }
+}
+
+/* ── Message entrance ── */
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}

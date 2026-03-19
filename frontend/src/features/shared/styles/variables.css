@@ -1,14 +1,13 @@
 /* =====================================================
    variables.css — Shared Design Tokens
-   Import this in Login.css, Register.css, and home.css
-   to keep the entire app on a single colour system.
+   Import this in all component CSS files.
 ===================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 
 :root {
   /* ── Brand / Primary (cyan-teal) ── */
-  /* --primary:              #4cdae7; */
-  --primary:              #8ff6ff;
+  --primary:              #8ff5ff;
   --primary-dim:          #00deec;
   --primary-fixed:        #00eefc;
   --on-primary:           #005d63;
@@ -17,15 +16,17 @@
   --inverse-primary:      #006a71;
 
   /* ── Secondary (purple) ── */
-  --secondary:            #bf81ff;
-  --secondary-dim:        #9c42f4;
-  --secondary-container:  #7701d0;
-  --on-secondary:         #32005c;
+  --secondary:              #bf81ff;
+  --secondary-dim:          #9c42f4;
+  --secondary-container:    #7701d0;
+  --on-secondary:           #32005c;
   --on-secondary-container: #f0dcff;
 
   /* ── Tertiary (sky-blue) ── */
-  --tertiary:             #69daff;
-  --tertiary-dim:         #00c0ea;
+  --tertiary:           #69daff;
+  --tertiary-dim:       #00c0ea;
+  --tertiary-container: #00cffc;
+  --on-tertiary:        #004a5d;
 
   /* ── Surfaces ── */
   --surface:                   #0e0e0e;
@@ -45,28 +46,118 @@
   --outline-variant: #494847;
 
   /* ── Error ── */
-  --error:             #ff716c;
-  --error-dim:         #d7383b;
-  --error-container:   rgba(159, 5, 25, 0.15);
-  --on-error:          #490006;
-  --on-error-container:#ffa8a3;
+  --error:              #ff716c;
+  --error-dim:          #d7383b;
+  --error-container:    rgba(159, 5, 25, 0.15);
+  --on-error:           #490006;
+  --on-error-container: #ffa8a3;
 
   /* ── Background ── */
   --background:    #0e0e0e;
   --on-background: #ffffff;
 
   /* ── Glass / UI Helpers ── */
-  --glass-bg:     rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --input-bg:     rgba(255, 255, 255, 0.05);
-  --input-border: rgba(255, 255, 255, 0.10);
+  --glass-bg:      rgba(14, 14, 14, 0.6);
+  --glass-card-bg: rgba(38, 38, 38, 0.4);
+  --glass-border:  rgba(255, 255, 255, 0.08);
+  --input-bg:      rgba(255, 255, 255, 0.05);
+  --input-border:  rgba(255, 255, 255, 0.10);
 
-  /* ── Legacy aliases (keep Login/Register classes working) ── */
-  --primary-hover:   #00deec;   /* maps to --primary-dim   */
-  --primary-dark:    #006a71;   /* maps to --inverse-primary */
-  --text-main:       #e2e8f0;
-  --text-muted:      #adaaaa;   /* aligns with --on-surface-variant */
-  --text-label:      #cbd5e1;
-  --text-dark:       #475569;
-  --bg-color:        #0e0e0e;   /* aligns with --surface */
+  /* ── Brand glow ── */
+  --brand-color:  #00F0FF;
+  --brand-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+
+  /* ── Legacy aliases ── */
+  --primary-hover: #00deec;
+  --primary-dark:  #006a71;
+  --text-main:     #e2e8f0;
+  --text-muted:    #adaaaa;
+  --text-label:    #cbd5e1;
+  --text-dark:     #475569;
+  --bg-color:      #0e0e0e;
+
+  /* ── Typography ── */
+  --font-headline: 'Space Grotesk', sans-serif;
+  --font-body:     'Inter', sans-serif;
+  --font-label:    'Inter', sans-serif;
+
+  /* ── Spacing ── */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* ── Border Radius ── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  20px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-primary-glow:    0 0 20px rgba(143, 245, 255, 0.3);
+  --shadow-primary-glow-sm: 0 0 15px rgba(143, 245, 255, 0.3);
+  --shadow-new-chat-hover:  0 0 15px rgba(0, 240, 255, 0.2);
+  --shadow-card:            0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-2xl:             0 25px 50px rgba(0, 0, 0, 0.5);
+
+  /* ── Transitions ── */
+  --transition-fast:   all 0.15s ease;
+  --transition-normal: all 0.3s ease;
+
+  /* ── Layout ── */
+  --sidebar-width: 288px; /* w-72 */
+  --topbar-height: 64px;
+
+  /* ── Z-Index ── */
+  --z-bg:      -1;
+  --z-sidebar: 20;
+  --z-topbar:  30;
+  --z-input:   30;
+}
+
+/* ── Material Symbols baseline ── */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* ── Global resets ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--surface-dim);
+  color: var(--on-surface);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a       { text-decoration: none; color: inherit; }
+button  { cursor: pointer; border: none; background: none; font-family: inherit; }
+input   { font-family: inherit; outline: none; border: none; background: none; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface-variant); border-radius: 10px; }
+
+/* ── Glass panel utility ── */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }

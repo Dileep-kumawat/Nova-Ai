@@ -3,6 +3,7 @@ import Login from "../features/auth/ui/Login"
 import Register from "../features/auth/ui/Register"
 import Protected from "../features/auth/components/Protected"
 import Home from "../features/shared/ui/Home"
+import Chat from "../features/chat/ui/Chat"
 
 const AppRoutes = () => {
     return (
@@ -12,7 +13,7 @@ const AppRoutes = () => {
             <Route path="/" element={<Home />} />
             <Route path="/dashboard" element={
                 <Protected>
-                    <h1>Dashboard page</h1>
+                    <Chat />
                 </Protected>
             } />
         </Routes>
