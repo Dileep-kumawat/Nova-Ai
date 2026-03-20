@@ -113,8 +113,14 @@
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-.chat-input__send-btn:hover  { transform: scale(1.05); }
-.chat-input__send-btn:active { transform: scale(0.95); }
+.chat-input__send-btn:hover {
+  transform: scale(1.05);
+}
+
+.chat-input__send-btn:active {
+  transform: scale(0.95);
+}
+
 .chat-input__send-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -130,4 +136,38 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   font-family: var(--font-label);
+}
+
+/* ── Disabled card state ── */
+.chat-input__card--disabled {
+  opacity: 0.7;
+  border-color: rgba(143, 245, 255, 0.05);
+  cursor: not-allowed;
+}
+
+.chat-input__card--disabled .chat-input__field {
+  cursor: not-allowed;
+}
+
+.chat-input__card--disabled .chat-input__attach-btn,
+.chat-input__card--disabled .chat-input__mic-btn {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Send button spinner ── */
+.chat-input__spinner {
+  animation: spin 0.9s linear infinite;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }

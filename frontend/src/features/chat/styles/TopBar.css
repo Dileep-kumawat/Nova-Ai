@@ -1,5 +1,4 @@
 /* TopBar.css */
-/* @import './variables.css'; */
 
 .topbar {
   position: fixed;
@@ -22,6 +21,7 @@
   display: flex;
   align-items: center;
   gap: var(--sp-8);
+  flex-shrink: 0;
 }
 
 .topbar__nav-link {
@@ -44,49 +44,104 @@
   border-bottom: 1px solid var(--brand-color);
 }
 
-/* ── Right: search ── */
+/* ── Centre — chat title ── */
+.topbar__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  flex: 1;
+  justify-content: center;
+  padding: 0 var(--sp-8);
+}
+
+.topbar__title-icon {
+  font-size: 16px;
+  color: var(--primary);
+  flex-shrink: 0;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+.topbar__title {
+  font-family: var(--font-headline);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 360px;
+  letter-spacing: -0.01em;
+}
+
+.topbar__title--empty {
+  color: var(--on-surface-variant);
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* ── "Thinking…" inline indicator ── */
+.topbar__title-thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-headline);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.topbar__title-spinner {
+  font-size: 14px;
+  color: var(--primary);
+  animation: topbar-spin 0.9s linear infinite;
+}
+
+@keyframes topbar-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Right — message count ── */
 .topbar__right {
   display: flex;
   align-items: center;
-  gap: var(--sp-6);
+  flex-shrink: 0;
+  min-width: 120px;
+  justify-content: flex-end;
 }
 
-.topbar__search-wrap {
-  position: relative;
-}
-
-.topbar__search-icon {
-  position: absolute;
-  left: var(--sp-3);
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  color: var(--on-surface-variant);
-  pointer-events: none;
-  transition: var(--transition-fast);
-}
-
-.topbar__search-wrap:focus-within .topbar__search-icon {
-  color: var(--primary);
-}
-
-.topbar__search-input {
-  background: rgba(38, 38, 38, 0.5);
+.topbar__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 4px var(--sp-3);
   border-radius: var(--radius-full);
-  padding: 6px var(--sp-4) 6px 36px;
-  font-size: 12px;
-  color: var(--on-surface);
-  width: 192px;
-  transition: var(--transition-normal);
-  border: 1px solid transparent;
+  background: rgba(143, 245, 255, 0.06);
+  border: 1px solid rgba(143, 245, 255, 0.12);
 }
 
-.topbar__search-input::placeholder {
+.topbar__meta-icon {
+  font-size: 14px;
+  color: var(--primary);
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+.topbar__meta-label {
+  font-family: var(--font-headline);
+  font-size: 10px;
+  font-weight: 600;
   color: var(--on-surface-variant);
-}
-
-.topbar__search-input:focus {
-  width: 256px;
-  border-color: rgba(143, 245, 255, 0.3);
-  box-shadow: 0 0 0 1px rgba(143, 245, 255, 0.15);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
 }

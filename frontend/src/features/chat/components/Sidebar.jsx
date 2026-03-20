@@ -2,41 +2,61 @@
 import '../styles/Sidebar.css';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../../auth/auth.slice';
+import { deleteChat } from '../api/chat.api';
+import { setChats, setCurrentChatId, setError } from '../chat.slice';
 
-const SESSIONS = [
-  {
-    id: 1,
-    icon: 'psychology',
-    title: 'Neural Architecture Design',
-    time: '2 hours ago',
-    active: true,
-  },
-  {
-    id: 2,
-    icon: 'database',
-    title: 'Intelligence Hub Queries',
-    time: 'Yesterday',
-    active: false,
-  },
-  {
-    id: 3,
-    icon: 'sensors',
-    title: 'System Status Logs',
-    time: '3 days ago',
-    active: false,
-  },
-];
+/* ── Relative-time helper ─────────────────────────────────────────────────── */
+function relativeTime(isoString) {
+  if (!isoString) return '';
+  const diff = Date.now() - new Date(isoString).getTime();
+  const mins = Math.floor(diff / 60_000);
+  const hours = Math.floor(diff / 3_600_000);
+  const days = Math.floor(diff / 86_400_000);
 
-export default function Sidebar({ onNewChat, user }) {
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins} min${mins === 1 ? '' : 's'} ago`;
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+  if (days < 2) return 'Yesterday';
+  if (days < 7) return `${days} days ago`;
+  return new Date(isoString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+/* ── Component ───────────────────────────────────────────────────────────── */
+export default function Sidebar({ onNewChat, onOpenChat, user }) {
 
   const { handleLogout } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const chats = useSelector((state) => state.chat.chats);
+  const currentChatId = useSelector((state) => state.chat.currentChatId);
+  const isLoading = useSelector((state) => state.chat.isLoading);
+
+  // Sort chats newest-first
+  const sortedChats = Object.values(chats).sort(
+    (a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)
+  );
+
+  async function handleDeleteChat(e, chatId) {
+    // Prevent click bubbling into the session row (which opens the chat)
+    e.stopPropagation();
+    try {
+      await deleteChat(chatId);
+      const updated = { ...chats };
+      delete updated[chatId];
+      dispatch(setChats(updated));
+      // If the deleted chat was active, reset to welcome screen
+      if (currentChatId === chatId) dispatch(setCurrentChatId(null));
+    } catch (err) {
+      dispatch(setError(err.message ?? 'Failed to delete chat. Please try again.'));
+    }
+  }
+
   return (
     <aside className="sidebar">
+
       {/* Brand */}
       <div className="sidebar__brand">
         <h1 className="sidebar__brand-name">NovaAI</h1>
@@ -45,7 +65,7 @@ export default function Sidebar({ onNewChat, user }) {
 
       {/* New Chat CTA */}
       <div className="sidebar__new-chat">
-        <button className="sidebar__new-chat-btn" onClick={onNewChat}>
+        <button className="sidebar__new-chat-btn" onClick={onNewChat} disabled={isLoading}>
           <span className="material-symbols-outlined">add_circle</span>
           New Chat
         </button>
@@ -53,20 +73,42 @@ export default function Sidebar({ onNewChat, user }) {
 
       {/* Session history */}
       <nav className="sidebar__nav">
-        {SESSIONS.map(({ id, icon, title, time, active }) => (
-          <div
-            key={id}
-            className={`sidebar__session${active ? ' sidebar__session--active' : ''}`}
-          >
-            <div className="sidebar__session-row">
-              <span className={`material-symbols-outlined sidebar__session-icon`}>
-                {icon}
-              </span>
-              <p className="sidebar__session-title">{title}</p>
+        {sortedChats.length === 0 && (
+          <p className="sidebar__empty">No conversations yet.</p>
+        )}
+
+        {sortedChats.map(({ id, title, lastUpdated }) => {
+          const isActive = id === currentChatId;
+          return (
+            <div
+              key={id}
+              className={`sidebar__session${isActive ? ' sidebar__session--active' : ''}`}
+              onClick={() => onOpenChat?.(id, chats)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && onOpenChat?.(id, chats)}
+              aria-current={isActive ? 'true' : undefined}
+            >
+              <div className="sidebar__session-row">
+                <span className="material-symbols-outlined sidebar__session-icon">
+                  chat_bubble
+                </span>
+                <p className="sidebar__session-title">{title || 'Untitled Chat'}</p>
+              </div>
+
+              <div className="sidebar__session-meta">
+                <p className="sidebar__session-time">{relativeTime(lastUpdated)}</p>
+                <button
+                  className="sidebar__session-delete"
+                  aria-label={`Delete chat: ${title}`}
+                  onClick={(e) => handleDeleteChat(e, id)}
+                >
+                  <span className="material-symbols-outlined">delete</span>
+                </button>
+              </div>
             </div>
-            <p className="sidebar__session-time">{time}</p>
-          </div>
-        ))}
+          );
+        })}
       </nav>
 
       {/* User profile */}
@@ -76,19 +118,19 @@ export default function Sidebar({ onNewChat, user }) {
             <img
               className="sidebar__user-avatar"
               src="default_avatar.jpg"
-              alt={user.username}
+              alt={user?.username ?? 'User'}
             />
             <div className="sidebar__user-online" />
           </div>
           <div className="sidebar__user-info">
-            <p className="sidebar__user-name">{user.username}</p>
-            <p className="sidebar__user-role">{user.email}</p>
+            <p className="sidebar__user-name">{user?.username}</p>
+            <p className="sidebar__user-role">{user?.email}</p>
           </div>
           <button
-            className="sidebar__logout-btn" aria-label="Logout"
+            className="sidebar__logout-btn"
+            aria-label="Logout"
             onClick={async () => {
               const { success } = await handleLogout();
-
               if (success) {
                 dispatch(setUser(null));
                 navigate('/login');
@@ -99,6 +141,7 @@ export default function Sidebar({ onNewChat, user }) {
           </button>
         </div>
       </div>
+
     </aside>
   );
 }

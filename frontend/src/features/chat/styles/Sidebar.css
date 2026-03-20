@@ -137,12 +137,71 @@
 .sidebar__session-time {
   font-size: 12px;
   color: var(--on-surface-variant);
-  padding-left: 28px; /* align under icon */
+  padding-left: 28px;
+  /* align under icon */
   opacity: 0.6;
 }
 
 .sidebar__session--active .sidebar__session-time {
   opacity: 1;
+}
+
+/* ── Session meta row (time + delete) ── */
+.sidebar__session-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 28px;
+  /* align under icon */
+}
+
+.sidebar__session-meta .sidebar__session-time {
+  padding-left: 0;
+}
+
+/* ── Per-session delete button ── */
+.sidebar__session-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: var(--radius-md);
+  color: var(--on-surface-variant);
+  opacity: 0;
+  transition: var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.sidebar__session-delete .material-symbols-outlined {
+  font-size: 14px;
+  color: inherit;
+}
+
+.sidebar__session:hover .sidebar__session-delete {
+  opacity: 0.5;
+}
+
+.sidebar__session-delete:hover {
+  opacity: 1 !important;
+  color: var(--error);
+  background: rgba(255, 113, 108, 0.12);
+}
+
+/* ── Empty state ── */
+.sidebar__empty {
+  font-size: 13px;
+  color: var(--on-surface-variant);
+  opacity: 0.5;
+  text-align: center;
+  padding: var(--sp-8) var(--sp-4);
+  font-family: var(--font-body);
+}
+
+/* ── New Chat button disabled state ── */
+.sidebar__new-chat-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* ── Footer / user profile ── */

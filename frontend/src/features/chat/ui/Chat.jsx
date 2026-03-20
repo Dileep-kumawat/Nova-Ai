@@ -1,17 +1,16 @@
 // Chat.jsx
 // Root shell composing Sidebar, TopBar, NewChat / message canvas, and ChatInput.
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import Sidebar from '../components/Sidebar';
 import TopBar from '../components/TopBar';
 import NewChat from '../components/NewChat';
 import ChatInput from '../components/ChatInput';
 import '../styles/Chat.css';
 import { useSelector } from 'react-redux';
-
-/* ── uid helper ── */
-let _uid = 0;
-const uid = () => ++_uid;
+import { useChat } from '../hooks/useChat';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 /* ── Format time helper ── */
 function formatTime(date) {
@@ -33,7 +32,11 @@ function AiMessage({ text }) {
       {/* Body */}
       <div className="chat__msg-ai-body">
         <div className="chat__bubble-ai glass-panel">
-          <p>{text}</p>
+          <div className="chat__md">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {text}
+            </ReactMarkdown>
+          </div>
         </div>
         {/* Status badge */}
         <div className="chat__ai-status">
@@ -52,13 +55,13 @@ function UserMessage({ text, time }) {
         <div className="chat__bubble-user">
           <p>{text}</p>
         </div>
-        <p className="chat__timestamp">Sent {time}</p>
+        {time && <p className="chat__timestamp">Sent {time}</p>}
       </div>
       {/* Avatar — profile image */}
       <div className="chat__avatar-user">
         <img
           src="default_avatar.jpg"
-          alt="Alex Rivera"
+          alt="User avatar"
         />
       </div>
     </div>
@@ -82,65 +85,59 @@ function TypingIndicator() {
   );
 }
 
+function ErrorBanner({ message, onDismiss }) {
+  return (
+    <div className="chat__error-banner" role="alert">
+      <span className="material-symbols-outlined">error</span>
+      <p>{message}</p>
+      <button className="chat__error-dismiss" onClick={onDismiss} aria-label="Dismiss error">
+        <span className="material-symbols-outlined">close</span>
+      </button>
+    </div>
+  );
+}
+
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Chat root
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-// Seed with the design's example conversation so the canvas is visible by default.
-const SEED_MESSAGES = [
-  {
-    id: uid(),
-    role: 'ai',
-    text: "System operational. I've analyzed the neural architecture schemas you requested. The latency distribution in the sub-layer components shows a 12% improvement over previous iterations.",
-    time: null,
-  },
-  {
-    id: uid(),
-    role: 'user',
-    text: "Excellent. Can we simulate the stress test for the secondary memory clusters? I want to see how the system handles recursive data loops under 90% load.",
-    time: '12:42 PM',
-  },
-];
-
 export default function Chat() {
-  const [messages, setMessages] = useState(SEED_MESSAGES);
-  const [isTyping, setIsTyping] = useState(false);
-  const [showNew, setShowNew] = useState(false);
   const bottomRef = useRef(null);
 
-  const user = useSelector(state => state.auth.user);
+  // ── Redux state ──────────────────────────────────────────
+  const user = useSelector((state) => state.auth.user);
+  const chats = useSelector((state) => state.chat.chats);
+  const currentChatId = useSelector((state) => state.chat.currentChatId);
+  const isLoading = useSelector((state) => state.chat.isLoading);
+  const error = useSelector((state) => state.chat.error);
 
-  const hasMessages = messages.length > 0 && !showNew;
+  // ── Derived values ───────────────────────────────────────
+  const currentMessages = currentChatId ? (chats[currentChatId]?.messages ?? []) : [];
+  const showNew = !currentChatId || currentMessages.length === 0;
 
+  // ── Hooks ────────────────────────────────────────────────
+  const { handleSendMessage, handleGetChats, handleOpenChat, handleDismissError } = useChat();
+
+  // Auto-scroll on new messages / typing
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isTyping]);
+  }, [currentMessages, isLoading]);
 
-  const handleNewChat = useCallback(() => {
-    setMessages([]);
-    setShowNew(true);
+  // Load sidebar chat list on mount
+  useEffect(() => {
+    handleGetChats();
   }, []);
+
+  // ── Handlers ─────────────────────────────────────────────
+  const handleNewChat = useCallback(() => {
+    // Clearing currentChatId shows the NewChat welcome screen
+    handleOpenChat(null, chats);
+  }, [chats, handleOpenChat]);
 
   const handleSend = useCallback(async (text) => {
     const time = formatTime(new Date());
-    setShowNew(false);
-    setMessages((prev) => [...prev, { id: uid(), role: 'user', text, time }]);
-    setIsTyping(true);
-
-    // Simulate AI — replace with real API call
-    await new Promise((r) => setTimeout(r, 1200 + Math.random() * 800));
-
-    setIsTyping(false);
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: uid(),
-        role: 'ai',
-        text: `Processing complete. "${text}" — this is a placeholder response. Wire up your real API here.`,
-        time: null,
-      },
-    ]);
-  }, []);
+    await handleSendMessage({ message: text, chatId: currentChatId, time });
+  }, [currentChatId, handleSendMessage]);
 
   const handleSuggestion = useCallback((label) => handleSend(label), [handleSend]);
 
@@ -153,27 +150,32 @@ export default function Chat() {
       </div>
 
       {/* Sidebar */}
-      <Sidebar onNewChat={handleNewChat} user={user} />
+      <Sidebar onNewChat={handleNewChat} onOpenChat={handleOpenChat} user={user} chats={chats} />
 
       {/* Right side */}
       <div className="chat__main">
         <TopBar />
 
+        {/* Error banner */}
+        {error && (
+          <ErrorBanner message={error} onDismiss={handleDismissError} />
+        )}
+
         <div className="chat__canvas">
-          {showNew || !hasMessages ? (
+          {showNew ? (
             /* Welcome screen */
             <NewChat onSuggestion={handleSuggestion} />
           ) : (
             /* Active conversation */
             <div className="chat__messages">
-              {messages.map((msg) =>
-                msg.role === 'ai' ? (
-                  <AiMessage key={msg.id} text={msg.text} />
+              {currentMessages.map((msg, index) =>
+                msg.role === 'assistant' || msg.role === 'ai' ? (
+                  <AiMessage key={index} text={msg.content} />
                 ) : (
-                  <UserMessage key={msg.id} text={msg.text} time={msg.time} />
+                  <UserMessage key={index} text={msg.content} time={msg.time} />
                 )
               )}
-              {isTyping && <TypingIndicator />}
+              {isLoading && <TypingIndicator />}
               <div ref={bottomRef} />
             </div>
           )}
@@ -181,7 +183,7 @@ export default function Chat() {
       </div>
 
       {/* Fixed bottom input */}
-      <ChatInput onSend={handleSend} />
+      <ChatInput onSend={handleSend} disabled={isLoading} />
     </div>
   );
 }
