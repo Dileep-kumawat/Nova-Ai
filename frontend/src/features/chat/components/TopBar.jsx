@@ -1,10 +1,11 @@
 // TopBar.jsx
 import React from 'react';
 import '../styles/TopBar.css';
+import { Link } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { label: 'Home', href: '#', active: false },
-  { label: 'Chat', href: '#', active: true  },
+  { label: 'Home', href: '/', active: false },
+  { label: 'Chat', href: '#', active: true },
 ];
 
 export default function TopBar() {
@@ -13,13 +14,13 @@ export default function TopBar() {
       {/* Left nav — small uppercase links */}
       <nav className="topbar__nav">
         {NAV_ITEMS.map(({ label, href, active }) => (
-          <a
+          <Link
             key={label}
-            href={href}
+            to={href}
             className={`topbar__nav-link${active ? ' topbar__nav-link--active' : ''}`}
           >
             {label}
-          </a>
+          </Link>
         ))}
       </nav>
 

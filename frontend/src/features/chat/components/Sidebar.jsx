@@ -1,6 +1,9 @@
 // Sidebar.jsx
-import React from 'react';
 import '../styles/Sidebar.css';
+import { useAuth } from '../../auth/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../auth/auth.slice';
 
 const SESSIONS = [
   {
@@ -27,6 +30,11 @@ const SESSIONS = [
 ];
 
 export default function Sidebar({ onNewChat }) {
+
+  const { handleLogout } = useAuth();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   return (
     <aside className="sidebar">
       {/* Brand */}
@@ -76,7 +84,17 @@ export default function Sidebar({ onNewChat }) {
             <p className="sidebar__user-name">Alex Rivera</p>
             <p className="sidebar__user-role">Intelligence Ops</p>
           </div>
-          <button className="sidebar__logout-btn" aria-label="Logout">
+          <button
+            className="sidebar__logout-btn" aria-label="Logout"
+            onClick={async () => {
+              const { success } = await handleLogout();
+
+              if (success) {
+                dispatch(setUser(null));
+                navigate('/login');
+              }
+            }}
+          >
             <span className="material-symbols-outlined">logout</span>
           </button>
         </div>

@@ -22,3 +22,9 @@ export async function getMe() {
 
     return res;
 }
+
+export async function logout() {
+    const res = await api.post('/api/auth/logout');
+
+    return res;
+}

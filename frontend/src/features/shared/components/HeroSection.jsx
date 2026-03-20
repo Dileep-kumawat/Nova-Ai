@@ -1,4 +1,6 @@
-const HeroSection = () => {
+import { Link } from "react-router-dom";
+
+const HeroSection = ({ user }) => {
   return (
     <section id="intelligence">
       <div className="hero-blob-primary"></div>
@@ -23,10 +25,12 @@ const HeroSection = () => {
           <div className="search-inner">
             <span className="material-symbols-outlined search-icon">search</span>
             <input className="search-input" placeholder="Query the neural network..." type="text" />
-            <button className="btn-execute">
-              <span>Execute</span>
-              <span className="material-symbols-outlined">bolt</span>
-            </button>
+            <Link to={user ? '/dashboard' : '/login'}>
+              <button className="btn-execute">
+                <span>Execute</span>
+                <span className="material-symbols-outlined">bolt</span>
+              </button>
+            </Link>
           </div>
         </div>
       </div>

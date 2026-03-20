@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 const Navbar = ({ user }) => {
   return (
     <nav className="topnav">
@@ -13,11 +15,11 @@ const Navbar = ({ user }) => {
       <div className="nav-actions">
         {
           user ?
-            <button className="btn-initialize-nav">Dashboard</button>
+            <Link to='/dashboard'><button className="btn-initialize-nav">Dashboard</button></Link>
             :
             <>
-              <button className="btn-signin">Sign In</button>
-              <button className="btn-initialize-nav">Initialize</button>
+              <Link to='/login'><button className="btn-signin">Sign In</button></Link>
+              <Link to='/register'><button className="btn-initialize-nav">Initialize</button></Link>
             </>
         }
       </div>

@@ -142,6 +142,21 @@ export async function getMe(req, res) {
 
 
 /**
+ * @desc Logout current logged in user
+ * @route POST /api/auth/logout
+ * @access Private
+ */
+export async function logout(req, res) {
+    res.clearCookie("token");
+
+    res.status(200).json({
+        message: "Logout successful",
+        success: true
+    });
+}
+
+
+/**
  * @desc Verify user's email address
  * @route GET /api/auth/verify-email
  * @access Public

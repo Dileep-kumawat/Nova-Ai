@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const CTASection = ({ user }) => {
   return (
     <section className="cta-section">
@@ -15,12 +17,12 @@ const CTASection = ({ user }) => {
             {
               user ?
                 <>
-                  <button className="btn-cta-primary">Dashboard</button>
+                  <Link to='/dashboard'><button className="btn-cta-primary">Dashboard</button></Link>
                 </>
                 :
                 <>
-                  <button className="btn-cta-primary">INITIALIZE NOW</button>
-                  <button className="btn-cta-secondary">SIGN IN</button>
+                  <Link to='/register'><button className="btn-cta-primary">INITIALIZE NOW</button></Link>
+                  <Link to='/login'><button className="btn-cta-secondary">SIGN IN</button></Link>
                 </>
             }
           </div>

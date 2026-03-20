@@ -62,7 +62,7 @@ const Home = () => {
         <>
             <Navbar user={user} />
             <main>
-                <HeroSection />
+                <HeroSection user={user} />
                 <FeaturesSection />
                 <ProductShowcase />
                 <ConsensusSection />

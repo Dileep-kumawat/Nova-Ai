@@ -1,4 +1,4 @@
-import { register, login, getMe } from '../api/auth.api.js';
+import { register, login, getMe, logout } from '../api/auth.api.js';
 import { useDispatch } from "react-redux";
 import { setError, setLoading, setUser } from '../auth.slice.js'
 
@@ -48,7 +48,21 @@ export function useAuth() {
             dispatch(setUser(res.data.user));
             return { success: true };
         } catch (error) {
-            handleAuthError(error);
+            // handleAuthError(error);
+            return { success: false };
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    async function handleLogout() {
+        try {
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            await logout();
+            return { success: true };
+        } catch (error) {
+            // handleAuthError(error);
             return { success: false };
         } finally {
             dispatch(setLoading(false));
@@ -58,6 +72,7 @@ export function useAuth() {
     return {
         handleRegister,
         handleLogin,
-        handleGetMe
+        handleGetMe,
+        handleLogout
     }
 }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, verifyEmail, login, getMe } from "../controllers/auth.controller.js";
+import { register, verifyEmail, login, getMe, logout } from "../controllers/auth.controller.js";
 import { registerValidator, loginValidator } from "../validators/auth.validator.js";
 import { authUser } from "../middleware/auth.middleware.js";
 
@@ -22,14 +22,19 @@ authRouter.post("/register", registerValidator, register);
  */
 authRouter.post("/login", loginValidator, login)
 
-
-
 /**
  * @route GET /api/auth/get-me
  * @desc Get current logged in user's details
  * @access Private
  */
 authRouter.get('/get-me', authUser, getMe)
+
+/**
+ * @route POST /api/auth/logout
+ * @desc Simply Logout the user by clearing token
+ * @access Private
+ */
+authRouter.post('/logout', authUser, logout)
 
 /**
  * @route GET /api/auth/verify-email
